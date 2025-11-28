@@ -33,30 +33,30 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-white/10 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-white/10 flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-neutral-800 bg-neutral-900 shrink-0">
+        <div className="flex items-center justify-between p-5 border-b border-slate-800 bg-slate-900 shrink-0">
           <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-white" />
+            <Settings className="w-5 h-5 text-slate-200" />
             Configuración de Lógica
           </h3>
-          <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs Navigation */}
-        <div className="flex border-b border-neutral-800 bg-black/20 overflow-x-auto shrink-0">
+        <div className="flex border-b border-slate-800 bg-slate-950/50 overflow-x-auto shrink-0">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-white text-white bg-white/5'
-                  : 'border-transparent text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50'
+                  ? 'border-indigo-500 text-white bg-indigo-500/5'
+                  : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
               }`}
             >
               {tab.icon}
@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-900">
           
           {/* TAB: GENERAL */}
           {activeTab === 'general' && (
@@ -76,7 +76,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <Layout className="w-4 h-4" />
                   Modo de Procesamiento
                 </h4>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-slate-500">
                   Selecciona qué tipo de resultado deseas generar al procesar el texto.
                 </p>
                 
@@ -90,22 +90,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       key={option.value}
                       className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                         config.outputMode === option.value 
-                          ? 'bg-white/5 border-white' 
-                          : 'bg-black border-neutral-800 hover:border-neutral-600'
+                          ? 'bg-indigo-500/10 border-indigo-500/50' 
+                          : 'bg-slate-950 border-slate-800 hover:border-slate-600'
                       }`}
                     >
                       <input 
                         type="radio" 
                         name="outputMode"
-                        className="mt-1"
+                        className="mt-1 accent-indigo-500"
                         checked={config.outputMode === option.value}
                         onChange={() => handleChange('outputMode', option.value as OutputMode)}
                       />
                       <div>
-                        <span className={`block text-sm font-bold ${config.outputMode === option.value ? 'text-white' : 'text-neutral-300'}`}>
+                        <span className={`block text-sm font-bold ${config.outputMode === option.value ? 'text-indigo-200' : 'text-slate-300'}`}>
                           {option.label}
                         </span>
-                        <span className="text-xs text-neutral-500">{option.desc}</span>
+                        <span className="text-xs text-slate-500">{option.desc}</span>
                       </div>
                     </label>
                   ))}
@@ -118,27 +118,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {activeTab === 'verses' && (
             <div className="space-y-6 animate-fadeIn">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-1 h-4 bg-blue-500 rounded-full"></div>
+                <div className="w-1 h-4 bg-indigo-500 rounded-full"></div>
                 <h4 className="text-sm font-bold text-white uppercase tracking-wider">División de Versículos</h4>
               </div>
               
-              <div className="p-4 bg-blue-900/10 border border-blue-900/30 rounded-lg mb-4">
-                <p className="text-xs text-blue-200">
+              <div className="p-4 bg-indigo-900/20 border border-indigo-500/20 rounded-lg mb-4">
+                <p className="text-xs text-indigo-200">
                   La aplicación usa una <strong>lógica inteligente</strong> predefinida para detectar encabezados, Salmos y dividir por oraciones gramaticales completas automáticamente.
                 </p>
               </div>
 
               <div className="space-y-5">
                 <label className="block space-y-2">
-                  <span className="text-neutral-400 text-xs font-medium uppercase">Separador Personalizado (Opcional)</span>
+                  <span className="text-slate-400 text-xs font-medium uppercase">Separador Personalizado (Opcional)</span>
                   <textarea 
                     value={config.verseSeparator}
                     onChange={(e) => handleChange('verseSeparator', e.target.value)}
                     placeholder="Dejar vacío para usar lógica automática..."
                     rows={12}
-                    className="w-full bg-black border border-neutral-700 rounded-lg px-3 py-2.5 text-white focus:border-white focus:ring-1 focus:ring-white focus:outline-none font-mono text-sm placeholder-neutral-700 resize-y min-h-[300px]"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none font-mono text-sm placeholder-slate-700 resize-y min-h-[300px]"
                   />
-                  <p className="text-[10px] text-neutral-500">
+                  <p className="text-[10px] text-slate-500">
                     Si escribes algo aquí, se desactivará la lógica inteligente y se usará este separador simple (ej. \n).
                   </p>
                 </label>
@@ -154,7 +154,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <h4 className="text-sm font-bold text-white uppercase tracking-wider">Estructura JSON</h4>
               </div>
 
-              <div className="p-4 bg-purple-900/10 border border-purple-900/30 rounded-lg mb-4">
+              <div className="p-4 bg-purple-900/20 border border-purple-500/20 rounded-lg mb-4">
                 <p className="text-xs text-purple-200">
                   Generación automática de IDs (njg-slm/njg-cap), detección de Salmos/Cartas y extracción de metadatos (Lugar, Fecha).
                 </p>
@@ -162,21 +162,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
               <div className="space-y-5">
                 <label className="block space-y-2">
-                  <span className="text-neutral-400 text-xs font-medium uppercase">Clave de Contenido (Opcional)</span>
+                  <span className="text-slate-400 text-xs font-medium uppercase">Clave de Contenido (Opcional)</span>
                   <textarea 
                     value={config.jsonKey}
                     onChange={(e) => handleChange('jsonKey', e.target.value)}
                     placeholder="content (Por defecto)"
                     rows={6}
-                    className="w-full bg-black border border-neutral-700 rounded-lg px-3 py-2.5 text-white focus:border-white focus:ring-1 focus:ring-white focus:outline-none font-mono text-sm placeholder-neutral-700 resize-y min-h-[150px]"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none font-mono text-sm placeholder-slate-700 resize-y min-h-[150px]"
                   />
-                  <p className="text-[10px] text-neutral-500">Override manual para el nombre del array de contenido.</p>
+                  <p className="text-[10px] text-slate-500">Override manual para el nombre del array de contenido.</p>
                 </label>
 
                 <div className="pt-2">
-                  <label className="flex items-center gap-3 p-3 bg-black rounded-lg border border-neutral-800 cursor-pointer hover:border-neutral-600 transition-colors group">
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${config.includeIndex ? 'bg-white border-white' : 'border-neutral-600 group-hover:border-neutral-500'}`}>
-                      {config.includeIndex && <Check className="w-3.5 h-3.5 text-black" />}
+                  <label className="flex items-center gap-3 p-3 bg-slate-950 rounded-lg border border-slate-800 cursor-pointer hover:border-slate-600 transition-colors group">
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${config.includeIndex ? 'bg-indigo-500 border-indigo-500' : 'border-slate-600 group-hover:border-slate-500'}`}>
+                      {config.includeIndex && <Check className="w-3.5 h-3.5 text-white" />}
                     </div>
                     <input 
                       type="checkbox" 
@@ -184,7 +184,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       checked={config.includeIndex}
                       onChange={(e) => handleChange('includeIndex', e.target.checked)}
                     />
-                    <span className="text-neutral-300 text-sm">Incluir índice numérico en objetos</span>
+                    <span className="text-slate-300 text-sm">Incluir índice numérico en objetos</span>
                   </label>
                 </div>
               </div>
@@ -193,8 +193,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-neutral-800 bg-neutral-900 flex justify-end shrink-0">
-          <Button onClick={onClose} variant="primary" className="bg-white text-black hover:bg-neutral-200 w-full sm:w-auto">
+        <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-end shrink-0">
+          <Button onClick={onClose} variant="primary" className="w-full sm:w-auto">
             Guardar y Cerrar
           </Button>
         </div>

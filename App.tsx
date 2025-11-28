@@ -219,7 +219,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-black text-neutral-200 font-sans selection:bg-white/20 overflow-hidden">
+    <div className="flex h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30 overflow-hidden">
       
       {/* Drawer Component (Overlay) */}
       <HistorySidebar 
@@ -232,48 +232,48 @@ const App: React.FC = () => {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-neutral-950 w-full">
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-slate-950 w-full">
         
         {/* Header / Toolbar */}
-        <header className="h-16 border-b border-neutral-900 bg-black flex items-center justify-between px-4 sm:px-6 shrink-0 z-10 relative">
+        <header className="h-16 border-b border-slate-900 bg-slate-950 flex items-center justify-between px-4 sm:px-6 shrink-0 z-10 relative shadow-md">
           <div className="flex items-center gap-4">
             
             {/* History Toggle Button */}
             <button 
               onClick={() => setIsHistoryOpen(true)}
-              className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors py-2 px-3 hover:bg-neutral-900 rounded-lg"
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors py-2 px-3 hover:bg-slate-900 rounded-lg border border-transparent hover:border-slate-800"
               title="Abrir Historial"
             >
               <History className="w-5 h-5" />
               <span className="text-sm font-medium hidden sm:inline">Historial</span>
             </button>
 
-            <div className="h-6 w-px bg-neutral-800 mx-1 hidden sm:block"></div>
+            <div className="h-6 w-px bg-slate-800 mx-1 hidden sm:block"></div>
 
             <div className="flex items-center gap-2">
-              <div className="bg-white p-1.5 rounded-md hidden sm:block">
-                 <Terminal className="w-4 h-4 text-black" />
+              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-1.5 rounded-md hidden sm:block shadow-lg shadow-indigo-500/20">
+                 <Terminal className="w-4 h-4 text-white" />
               </div>
               <h1 className="text-lg font-bold text-white tracking-tight">
-                Procesador<span className="text-neutral-500">Estructural</span> <span className="text-[10px] bg-gradient-to-r from-blue-500 to-purple-500 text-white px-1.5 py-0.5 rounded ml-1">AI</span>
+                Procesador<span className="text-slate-500">Estructural</span>
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" onClick={handleNew} title="Nuevo Documento" className="text-neutral-400 hover:text-white hidden sm:flex">
+            <Button variant="ghost" onClick={handleNew} title="Nuevo Documento" className="text-slate-400 hover:text-white hidden sm:flex">
               <PlusCircle className="w-5 h-5" />
               <span>Nuevo</span>
             </Button>
-            <div className="w-px h-6 bg-neutral-800 mx-2 hidden sm:block"></div>
-            <Button variant="secondary" onClick={() => setIsSettingsOpen(true)} className="bg-neutral-900 border border-neutral-800 hover:bg-neutral-800">
+            <div className="w-px h-6 bg-slate-800 mx-2 hidden sm:block"></div>
+            <Button variant="secondary" onClick={() => setIsSettingsOpen(true)} className="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Lógica</span>
             </Button>
             <Button 
               onClick={handleProcess} 
               disabled={(!textInput && !attachment) || isLoading} 
-              className={`border-none font-bold transition-all ${isLoading ? 'bg-neutral-800 text-neutral-400 cursor-wait' : 'bg-white text-black hover:bg-neutral-200'}`}
+              className={`border-none font-bold transition-all shadow-lg ${isLoading ? 'bg-slate-800 text-slate-400 cursor-wait' : 'bg-white text-slate-950 hover:bg-indigo-50 hover:shadow-indigo-500/20'}`}
             >
               {isLoading ? (
                 <>
@@ -282,8 +282,8 @@ const App: React.FC = () => {
                 </>
               ) : (
                 <>
-                   <Sparkles className="w-4 h-4 fill-current text-purple-600" />
-                   <span className="hidden sm:inline">Procesar con IA</span>
+                   <Sparkles className="w-4 h-4 fill-current text-indigo-600" />
+                   <span className="hidden sm:inline">Procesar IA</span>
                    <span className="sm:hidden">IA</span>
                 </>
               )}
@@ -295,9 +295,9 @@ const App: React.FC = () => {
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
           
           {/* Left/Top: Input Area */}
-          <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-neutral-900 p-6 min-h-[300px] bg-black">
+          <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-slate-900 p-6 min-h-[300px] bg-slate-950">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Entrada / Archivo</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Entrada / Archivo</label>
               <div className="flex gap-2">
                 <input 
                   type="file" 
@@ -308,7 +308,7 @@ const App: React.FC = () => {
                 />
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs text-neutral-400 hover:text-white flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 hover:border-neutral-600 transition-all"
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-800 hover:border-slate-600 transition-all hover:bg-slate-900"
                 >
                   <Upload className="w-3 h-3" />
                   {attachment ? 'Cambiar Archivo' : 'Subir PDF/Txt'}
@@ -319,24 +319,24 @@ const App: React.FC = () => {
             <div className="relative flex-1 group flex flex-col gap-4">
                 {/* Visualizador de Adjunto */}
                 {attachment && (
-                  <div className="flex items-center justify-between p-3 bg-neutral-900 border border-neutral-800 rounded-lg animate-fadeIn">
+                  <div className="flex items-center justify-between p-3 bg-slate-900 border border-slate-800 rounded-lg animate-fadeIn shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-900/20 text-red-500 rounded-md">
+                      <div className="p-2 bg-red-500/10 text-red-400 rounded-md border border-red-500/20">
                         <FileText className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white truncate max-w-[200px]">{attachment.name}</p>
-                        <p className="text-xs text-neutral-500">PDF Document • Listo para analizar</p>
+                        <p className="text-sm font-medium text-slate-200 truncate max-w-[200px]">{attachment.name}</p>
+                        <p className="text-xs text-slate-500">PDF Document • Listo para analizar</p>
                       </div>
                     </div>
-                    <button onClick={removeAttachment} className="p-1 hover:bg-neutral-800 rounded-full transition-colors text-neutral-500 hover:text-white">
+                    <button onClick={removeAttachment} className="p-1 hover:bg-slate-800 rounded-full transition-colors text-slate-500 hover:text-white">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                 )}
 
                 <textarea
-                  className={`flex-1 w-full bg-neutral-900/30 border border-neutral-800 rounded-xl p-5 resize-none focus:outline-none focus:ring-1 focus:ring-white/20 focus:bg-neutral-900/50 text-neutral-300 font-mono text-sm leading-relaxed transition-all placeholder-neutral-700 ${attachment ? 'h-1/2' : 'h-full'}`}
+                  className={`flex-1 w-full bg-slate-900/40 border border-slate-800 rounded-xl p-5 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/50 focus:bg-slate-900/60 text-slate-300 font-mono text-sm leading-relaxed transition-all placeholder-slate-700 ${attachment ? 'h-1/2' : 'h-full'}`}
                   placeholder={attachment ? "Añade instrucciones extra para el PDF aquí (opcional)..." : "Pega tu texto aquí o sube un PDF para comenzar..."}
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
@@ -346,24 +346,24 @@ const App: React.FC = () => {
           </div>
 
           {/* Right/Bottom: Output Area */}
-          <div className="flex-1 flex flex-col p-6 bg-neutral-950">
+          <div className="flex-1 flex flex-col p-6 bg-slate-900/30">
             
             {/* Output Tabs & Actions */}
             <div className="flex items-center justify-between mb-4">
-              <div className="flex bg-black p-1 rounded-lg border border-neutral-900">
+              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-900 shadow-sm">
                 
                 {(!result || (result.verses && result.verses.length > 0)) && (
                   <button
                     onClick={() => setActiveTab('verses')}
                     className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                       activeTab === 'verses' 
-                        ? 'bg-neutral-800 text-white shadow-sm' 
-                        : 'text-neutral-500 hover:text-neutral-300'
+                        ? 'bg-slate-800 text-white shadow-sm ring-1 ring-white/5' 
+                        : 'text-slate-500 hover:text-slate-300'
                     }`}
                   >
                     <AlignLeft className="w-4 h-4" />
                     Versículos
-                    {result?.verses && <span className="ml-1 text-[10px] bg-white text-black px-1.5 py-0.5 rounded-full">{result.verses.length}</span>}
+                    {result?.verses && <span className="ml-1 text-[10px] bg-indigo-500 text-white px-1.5 py-0.5 rounded-full">{result.verses.length}</span>}
                   </button>
                 )}
                 
@@ -372,8 +372,8 @@ const App: React.FC = () => {
                     onClick={() => setActiveTab('json')}
                     className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                       activeTab === 'json' 
-                        ? 'bg-neutral-800 text-white shadow-sm' 
-                        : 'text-neutral-500 hover:text-neutral-300'
+                        ? 'bg-slate-800 text-white shadow-sm ring-1 ring-white/5' 
+                        : 'text-slate-500 hover:text-slate-300'
                     }`}
                   >
                     <FileJson className="w-4 h-4" />
@@ -384,10 +384,10 @@ const App: React.FC = () => {
 
               {result && (
                 <div className="flex items-center gap-2">
-                   <div className="text-[10px] text-neutral-600 font-mono uppercase border border-neutral-800 px-2 py-1 rounded hidden lg:block">
+                   <div className="text-[10px] text-slate-500 font-mono uppercase border border-slate-800 px-2 py-1 rounded hidden lg:block bg-slate-950">
                       Modo: {currentConfig.outputMode === 'both' ? 'Completo' : currentConfig.outputMode === 'verses' ? 'Solo Versos' : 'Solo JSON'}
                    </div>
-                  <Button variant="ghost" onClick={handleCopy} className="text-neutral-500 hover:text-white hover:bg-neutral-900">
+                  <Button variant="ghost" onClick={handleCopy} className="text-slate-500 hover:text-white hover:bg-slate-800">
                     {copied ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                     <span className={copied ? "text-green-500" : ""}>{copied ? 'Copiado' : 'Copiar'}</span>
                   </Button>
@@ -396,20 +396,20 @@ const App: React.FC = () => {
             </div>
 
             {/* Output Display */}
-            <div className="flex-1 bg-black border border-neutral-900 rounded-xl overflow-hidden relative shadow-inner">
+            <div className="flex-1 bg-slate-950 border border-slate-900 rounded-xl overflow-hidden relative shadow-inner">
               {isLoading ? (
-                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm z-20">
-                    <Loader2 className="w-10 h-10 text-white animate-spin mb-4" />
-                    <p className="text-sm text-neutral-300 animate-pulse">Analizando estructura y contenido...</p>
-                    {attachment && <p className="text-xs text-neutral-500 mt-2">Leyendo documento PDF...</p>}
+                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm z-20">
+                    <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+                    <p className="text-sm text-slate-300 animate-pulse font-medium">Analizando estructura con IA...</p>
+                    {attachment && <p className="text-xs text-slate-500 mt-2">Leyendo documento PDF...</p>}
                  </div>
               ) : !result ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-700">
-                  <div className="w-16 h-16 rounded-full bg-neutral-900 flex items-center justify-center mb-4">
-                     <Sparkles className="w-8 h-8 opacity-50 text-purple-900" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700">
+                  <div className="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center mb-4 border border-slate-800">
+                     <Sparkles className="w-8 h-8 opacity-40 text-indigo-400" />
                   </div>
-                  <p className="text-sm font-medium">Esperando procesamiento inteligente...</p>
-                  <p className="text-xs text-neutral-600 mt-2">Sube un PDF o pega texto para comenzar</p>
+                  <p className="text-sm font-medium">Esperando procesamiento</p>
+                  <p className="text-xs text-slate-600 mt-2">Sube un PDF o pega texto para comenzar</p>
                 </div>
               ) : (
                 <div className="absolute inset-0 overflow-auto p-6 custom-scrollbar">
@@ -423,22 +423,22 @@ const App: React.FC = () => {
                         // Detectar si es un encabezado probable (MAYUSCULAS cortas o sin punto final)
                         const isLikelyHeader = !isNumbered && !isSeparator && (verse === verse.toUpperCase() || verse.length < 50) && !verse.trim().endsWith('.');
                         
-                        if (isSeparator) return <hr key={idx} className="border-neutral-800 my-8" />;
+                        if (isSeparator) return <hr key={idx} className="border-slate-800 my-8" />;
 
                         return (
-                        <div key={idx} className={`flex gap-4 group p-2 -mx-2 rounded-lg transition-colors ${isLikelyHeader ? 'bg-neutral-900/20 py-4 justify-center text-center' : 'hover:bg-neutral-900/50 border-b border-neutral-900/50 last:border-0'}`}>
-                          <p className={`${isLikelyHeader ? 'text-white font-bold tracking-widest text-sm' : 'text-neutral-300 leading-relaxed text-base font-light'}`}>
+                        <div key={idx} className={`flex gap-4 group p-2 -mx-2 rounded-lg transition-colors ${isLikelyHeader ? 'bg-slate-900/40 py-4 justify-center text-center border border-slate-800/50' : 'hover:bg-slate-900/30 border-b border-slate-900/50 last:border-0'}`}>
+                          <p className={`${isLikelyHeader ? 'text-indigo-200 font-bold tracking-widest text-sm' : 'text-slate-300 leading-relaxed text-base font-light'}`}>
                             {verse}
                           </p>
                         </div>
                       )})}
                     </div>
                   ) : activeTab === 'json' && result.jsonOutput ? (
-                    <pre className="font-mono text-xs text-green-500/80 whitespace-pre-wrap break-words leading-relaxed">
+                    <pre className="font-mono text-xs text-emerald-400/90 whitespace-pre-wrap break-words leading-relaxed">
                       {result.jsonOutput}
                     </pre>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-neutral-600">
+                    <div className="flex items-center justify-center h-full text-slate-600">
                       <div className="flex flex-col items-center gap-2">
                         <Info className="w-6 h-6" />
                         <p className="text-sm">Resultado no generado en este modo.</p>
