@@ -2,13 +2,8 @@ export type OutputMode = 'both' | 'verses' | 'json';
 
 export interface ProcessorConfig {
   outputMode: OutputMode;
-  
-  // Configuración de Versículos
-  verseSeparator: string;   // Si está vacío, usa la lógica inteligente. Si tiene algo, usa eso como separador manual.
-
-  // Configuración de JSON
-  jsonKey: string;          // Para overrides manuales, por defecto usa la lógica de "content"
-  
+  verseSeparator: string;
+  jsonKey: string;
   includeIndex: boolean;
 }
 
@@ -17,10 +12,17 @@ export interface ProcessingResult {
   jsonOutput: string | null;
 }
 
+export interface Attachment {
+  name: string;
+  mimeType: string;
+  data: string; // Base64 limpia
+}
+
 export interface HistoryItem {
   id: string;
   timestamp: number;
   originalText: string;
+  attachmentName?: string; // Para saber si hubo archivo
   config: ProcessorConfig;
   preview: string;
 }

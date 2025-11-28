@@ -12,14 +12,16 @@ import {
   Terminal,
   Info,
   Loader2,
-  Sparkles
+  Sparkles,
+  FileText,
+  X
 } from 'lucide-react';
 
 import { HistorySidebar } from './components/HistorySidebar';
 import { SettingsModal } from './components/SettingsModal';
 import { Button } from './components/Button';
 import { processTextContent } from './services/processor';
-import { HistoryItem, ProcessorConfig, ProcessingResult } from './types';
+import { HistoryItem, ProcessorConfig, ProcessingResult, Attachment } from './types';
 
 // Initial Configuration Defaults
 const DEFAULT_CONFIG: ProcessorConfig = {
@@ -32,6 +34,8 @@ const DEFAULT_CONFIG: ProcessorConfig = {
 const App: React.FC = () => {
   // State Management
   const [textInput, setTextInput] = useState<string>('');
+  const [attachment, setAttachment] = useState<Attachment | null>(null);
+  
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem('app_history');
@@ -82,13 +86,13 @@ const App: React.FC = () => {
 
   // Handlers
   const handleProcess = async () => {
-    if (!textInput.trim()) return;
+    if (!textInput.trim() && !attachment) return;
 
     setIsLoading(true);
     setResult(null);
 
     try {
-      const processed = await processTextContent(textInput, currentConfig);
+      const processed = await processTextContent(textInput, currentConfig, attachment);
       setResult(processed);
       
       // Auto-switch tab based on what was generated
@@ -101,15 +105,18 @@ const App: React.FC = () => {
         id: Date.now().toString(),
         timestamp: Date.now(),
         originalText: textInput,
+        attachmentName: attachment?.name,
         config: { ...currentConfig }, 
-        preview: textInput.substring(0, 30) + (textInput.length > 30 ? '...' : '')
+        preview: attachment 
+          ? `[Archivo] ${attachment.name}` 
+          : textInput.substring(0, 30) + (textInput.length > 30 ? '...' : '')
       };
 
       setHistory(prev => [newItem, ...prev]);
       setSelectedHistoryId(newItem.id);
     } catch (error) {
       console.error("Processing failed", error);
-      alert("Hubo un error al procesar el texto con la IA.");
+      alert("Hubo un error al procesar con la IA.");
     } finally {
       setIsLoading(false);
     }
@@ -119,12 +126,18 @@ const App: React.FC = () => {
     setTextInput(item.originalText);
     setCurrentConfig(item.config); 
     setSelectedHistoryId(item.id);
+    setAttachment(null); // No recuperamos el adjunto binario del historial para ahorrar memoria
     
-    // Si seleccionamos historial, re-procesamos (o idealmente guardaríamos el resultado en el historial para no gastar tokens, 
-    // pero por simplicidad y para permitir re-configuracion, procesamos de nuevo).
+    // Si seleccionamos historial, re-procesamos (Nota: si tenía adjunto, fallará si no se vuelve a subir, 
+    // pero para texto plano funciona. En una app real, guardaríamos el resultado en el historial).
+    if (item.attachmentName) {
+      alert("Este historial tenía un archivo adjunto. Por favor, vuelve a subirlo si deseas procesarlo de nuevo. Mostrando configuración y texto guardado.");
+      return;
+    }
+
     setIsLoading(true);
     try {
-        const processed = await processTextContent(item.originalText, item.config);
+        const processed = await processTextContent(item.originalText, item.config, null);
         setResult(processed);
     } finally {
         setIsLoading(false);
@@ -142,13 +155,45 @@ const App: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      setTextInput(content);
-    };
-    reader.readAsText(file);
+    // Resetear
+    setAttachment(null);
     e.target.value = '';
+
+    const isPdf = file.type === 'application/pdf';
+
+    if (isPdf) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        // result es "data:application/pdf;base64,....."
+        // Necesitamos solo la parte base64
+        const base64Data = result.split(',')[1];
+        
+        setAttachment({
+          name: file.name,
+          mimeType: file.type,
+          data: base64Data
+        });
+        
+        // Limpiamos el texto si suben PDF para evitar confusión, o lo dejamos como "prompt"
+        if (!textInput) {
+            setTextInput("Extrae el contenido de este documento.");
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // Fallback para texto plano
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        setTextInput(content);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const removeAttachment = () => {
+    setAttachment(null);
   };
 
   const handleCopy = () => {
@@ -158,8 +203,6 @@ const App: React.FC = () => {
     if (activeTab === 'json') {
         textToCopy = result.jsonOutput || '';
     } else {
-        // Para versículos, el array ya viene formateado visualmente en algunos casos, 
-        // pero asegurémonos de copiar texto limpio.
         textToCopy = result.verses?.join('\n\n') || '';
     }
       
@@ -170,6 +213,7 @@ const App: React.FC = () => {
 
   const handleNew = () => {
     setTextInput('');
+    setAttachment(null);
     setResult(null);
     setSelectedHistoryId(null);
   };
@@ -228,7 +272,7 @@ const App: React.FC = () => {
             </Button>
             <Button 
               onClick={handleProcess} 
-              disabled={!textInput || isLoading} 
+              disabled={(!textInput && !attachment) || isLoading} 
               className={`border-none font-bold transition-all ${isLoading ? 'bg-neutral-800 text-neutral-400 cursor-wait' : 'bg-white text-black hover:bg-neutral-200'}`}
             >
               {isLoading ? (
@@ -253,13 +297,13 @@ const App: React.FC = () => {
           {/* Left/Top: Input Area */}
           <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-neutral-900 p-6 min-h-[300px] bg-black">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Entrada de Texto</label>
+              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Entrada / Archivo</label>
               <div className="flex gap-2">
                 <input 
                   type="file" 
                   ref={fileInputRef} 
                   className="hidden" 
-                  accept=".txt,.json,.md,.csv" 
+                  accept=".txt,.json,.md,.csv,.pdf" 
                   onChange={handleFileUpload}
                 />
                 <button 
@@ -267,17 +311,36 @@ const App: React.FC = () => {
                   className="text-xs text-neutral-400 hover:text-white flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 hover:border-neutral-600 transition-all"
                 >
                   <Upload className="w-3 h-3" />
-                  Subir Archivo
+                  {attachment ? 'Cambiar Archivo' : 'Subir PDF/Txt'}
                 </button>
               </div>
             </div>
-            <div className="relative flex-1 group">
+            
+            <div className="relative flex-1 group flex flex-col gap-4">
+                {/* Visualizador de Adjunto */}
+                {attachment && (
+                  <div className="flex items-center justify-between p-3 bg-neutral-900 border border-neutral-800 rounded-lg animate-fadeIn">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-red-900/20 text-red-500 rounded-md">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white truncate max-w-[200px]">{attachment.name}</p>
+                        <p className="text-xs text-neutral-500">PDF Document • Listo para analizar</p>
+                      </div>
+                    </div>
+                    <button onClick={removeAttachment} className="p-1 hover:bg-neutral-800 rounded-full transition-colors text-neutral-500 hover:text-white">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
                 <textarea
-                className="absolute inset-0 w-full h-full bg-neutral-900/30 border border-neutral-800 rounded-xl p-5 resize-none focus:outline-none focus:ring-1 focus:ring-white/20 focus:bg-neutral-900/50 text-neutral-300 font-mono text-sm leading-relaxed transition-all placeholder-neutral-700"
-                placeholder="Pega tu texto aquí (Salmo o Carta) para comenzar..."
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                disabled={isLoading}
+                  className={`flex-1 w-full bg-neutral-900/30 border border-neutral-800 rounded-xl p-5 resize-none focus:outline-none focus:ring-1 focus:ring-white/20 focus:bg-neutral-900/50 text-neutral-300 font-mono text-sm leading-relaxed transition-all placeholder-neutral-700 ${attachment ? 'h-1/2' : 'h-full'}`}
+                  placeholder={attachment ? "Añade instrucciones extra para el PDF aquí (opcional)..." : "Pega tu texto aquí o sube un PDF para comenzar..."}
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  disabled={isLoading}
                 />
             </div>
           </div>
@@ -337,7 +400,8 @@ const App: React.FC = () => {
               {isLoading ? (
                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm z-20">
                     <Loader2 className="w-10 h-10 text-white animate-spin mb-4" />
-                    <p className="text-sm text-neutral-300 animate-pulse">Analizando estructura y semántica...</p>
+                    <p className="text-sm text-neutral-300 animate-pulse">Analizando estructura y contenido...</p>
+                    {attachment && <p className="text-xs text-neutral-500 mt-2">Leyendo documento PDF...</p>}
                  </div>
               ) : !result ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-700">
@@ -345,7 +409,7 @@ const App: React.FC = () => {
                      <Sparkles className="w-8 h-8 opacity-50 text-purple-900" />
                   </div>
                   <p className="text-sm font-medium">Esperando procesamiento inteligente...</p>
-                  <p className="text-xs text-neutral-600 mt-2">Pega el texto y presiona Procesar</p>
+                  <p className="text-xs text-neutral-600 mt-2">Sube un PDF o pega texto para comenzar</p>
                 </div>
               ) : (
                 <div className="absolute inset-0 overflow-auto p-6 custom-scrollbar">
@@ -354,9 +418,13 @@ const App: React.FC = () => {
                       {result.verses.map((verse, idx) => {
                         // Detectar si el versículo comienza con un número (formato 1. Texto) para estilizar
                         const isNumbered = /^\d+\./.test(verse);
+                        // Detectar si es un separador visual
+                        const isSeparator = verse.includes('---');
                         // Detectar si es un encabezado probable (MAYUSCULAS cortas o sin punto final)
-                        const isLikelyHeader = !isNumbered && (verse === verse.toUpperCase() || verse.length < 50) && !verse.trim().endsWith('.');
+                        const isLikelyHeader = !isNumbered && !isSeparator && (verse === verse.toUpperCase() || verse.length < 50) && !verse.trim().endsWith('.');
                         
+                        if (isSeparator) return <hr key={idx} className="border-neutral-800 my-8" />;
+
                         return (
                         <div key={idx} className={`flex gap-4 group p-2 -mx-2 rounded-lg transition-colors ${isLikelyHeader ? 'bg-neutral-900/20 py-4 justify-center text-center' : 'hover:bg-neutral-900/50 border-b border-neutral-900/50 last:border-0'}`}>
                           <p className={`${isLikelyHeader ? 'text-white font-bold tracking-widest text-sm' : 'text-neutral-300 leading-relaxed text-base font-light'}`}>
