@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { ProcessorConfig, ProcessingResult, Attachment } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const SYSTEM_PROMPT = `
 Eres un asistente editorial experto en la estructuración y versificación de textos religiosos (Salmos, Cartas Apostólicas y Máximas).
 
@@ -56,6 +54,13 @@ export const processTextContent = async (
   }
 
   try {
+    // Inicialización segura dentro de la función
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("La clave de API (VITE_API_KEY) no está configurada en el entorno.");
+    }
+    const ai = new GoogleGenAI({ apiKey });
+
     let userCustomInstructions = "";
     if (config.verseSeparator) userCustomInstructions += `\nNOTA: Separador versículos forzado: ${config.verseSeparator}`;
     if (config.jsonKey) userCustomInstructions += `\nNOTA: Usar key '${config.jsonKey}' en JSON.`;
@@ -121,8 +126,8 @@ export const processTextContent = async (
   } catch (error) {
     console.error("Error processing with Gemini:", error);
     return {
-      verses: ["Error al procesar.", "Si el PDF es muy grande (>20MB), intenta dividirlo.", `Detalle: ${error}`],
-      jsonOutput: JSON.stringify({ error: "Failed to process content" }, null, 2)
+      verses: ["Error al procesar.", "Verifica tu conexión y tu API Key.", `Detalle: ${error}`],
+      jsonOutput: JSON.stringify({ error: "Failed to process content", details: String(error) }, null, 2)
     };
   }
 };
